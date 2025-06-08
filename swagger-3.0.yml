@@ -3265,6 +3265,7 @@ components:
         validUntil:
           type: string
           format: date-time
+          nullable: true
         cidrRanges:
           type: array
           items:
