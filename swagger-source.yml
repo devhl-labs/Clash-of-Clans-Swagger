@@ -263,9 +263,9 @@ definitions:
   ClanCapitalRanking:
     type: object
     properties:
-      clanCapitalPoints:
-        type: integer
       clanPoints:
+        type: integer
+      clanCapitalPoints:
         type: integer
   WarStatusList:
     type: array
@@ -274,10 +274,6 @@ definitions:
   WarStatus:
     type: object
     properties:
-      statusCode:
-        type: integer
-      clanTag:
-        type: string
       enemyClanTag:
         type: string
       warState:
@@ -293,6 +289,10 @@ definitions:
           - WAR
           - IN_WAR
           - ENDED
+      statusCode:
+        type: integer
+      clanTag:
+        type: string
       timestamp:
         type: string
   LocationList:
@@ -308,6 +308,8 @@ definitions:
     properties:
       league:
         $ref: '#/definitions/League'
+      leagueTier:
+        $ref: '#/definitions/LeagueTier'
       builderBaseLeague:
         $ref: '#/definitions/BuilderBaseLeague'
       tag:
@@ -368,6 +370,15 @@ definitions:
         $ref: '#/definitions/JsonLocalizedName'
       id:
         type: integer
+  LeagueTier:
+    type: object
+    properties:
+      name:
+        $ref: '#/definitions/JsonLocalizedName'
+      id:
+        type: integer
+      iconUrls:
+        type: object
   League:
     type: object
     properties:
@@ -415,6 +426,34 @@ definitions:
         $ref: '#/definitions/ClanMemberList'
       tag:
         type: string
+      clanPoints:
+        type: integer
+      clanLevel:
+        type: integer
+      warWinStreak:
+        type: integer
+      warWins:
+        type: integer
+      warTies:
+        type: integer
+      chatLanguage:
+        $ref: '#/definitions/Language'
+      isFamilyFriendly:
+        type: boolean
+      warLosses:
+        type: integer
+      isWarLogPublic:
+        type: boolean
+      clanCapitalPoints:
+        type: integer
+      requiredTrophies:
+        type: integer
+      requiredBuilderBaseTrophies:
+        type: integer
+      requiredTownhallLevel:
+        type: integer
+      clanBuilderBasePoints:
+        type: integer
       warFrequency:
         type: string
         enum:
@@ -425,34 +464,6 @@ definitions:
           - LESS_THAN_ONCE_PER_WEEK
           - NEVER
           - ANY
-      clanBuilderBasePoints:
-        type: integer
-      clanCapitalPoints:
-        type: integer
-      requiredTrophies:
-        type: integer
-      requiredBuilderBaseTrophies:
-        type: integer
-      requiredTownhallLevel:
-        type: integer
-      isFamilyFriendly:
-        type: boolean
-      isWarLogPublic:
-        type: boolean
-      clanLevel:
-        type: integer
-      warWinStreak:
-        type: integer
-      warWins:
-        type: integer
-      warTies:
-        type: integer
-      warLosses:
-        type: integer
-      clanPoints:
-        type: integer
-      chatLanguage:
-        $ref: '#/definitions/Language'
       labels:
         $ref: '#/definitions/LabelList'
       name:
@@ -514,12 +525,17 @@ definitions:
     properties:
       clan:
         $ref: '#/definitions/WarClan'
+      opponent:
+        $ref: '#/definitions/WarClan'
       teamSize:
         type: integer
       attacksPerMember:
         type: integer
-      opponent:
-        $ref: '#/definitions/WarClan'
+      battleModifier:
+        type: string
+        enum:
+          - NONE
+          - HARD_MODE
       startTime:
         type: string
       state:
@@ -609,9 +625,9 @@ definitions:
   ClanBuilderBaseRanking:
     type: object
     properties:
-      clanBuilderBasePoints:
-        type: integer
       clanPoints:
+        type: integer
+      clanBuilderBasePoints:
         type: integer
   PlayerBuilderBaseRankingList:
     type: array
@@ -658,6 +674,8 @@ definitions:
     properties:
       league:
         $ref: '#/definitions/League'
+      leagueTier:
+        $ref: '#/definitions/LeagueTier'
       clan:
         $ref: '#/definitions/PlayerRankingClan'
       attackWins:
@@ -680,6 +698,10 @@ definitions:
     type: array
     items:
       $ref: '#/definitions/League'
+  LeagueTierList:
+    type: array
+    items:
+      $ref: '#/definitions/LeagueTier'
   ClanWarLog:
     type: array
     items:
@@ -689,12 +711,17 @@ definitions:
     properties:
       clan:
         $ref: '#/definitions/WarClan'
+      opponent:
+        $ref: '#/definitions/WarClan'
       teamSize:
         type: integer
       attacksPerMember:
         type: integer
-      opponent:
-        $ref: '#/definitions/WarClan'
+      battleModifier:
+        type: string
+        enum:
+          - NONE
+          - HARD_MODE
       endTime:
         type: string
       result:
@@ -795,9 +822,9 @@ definitions:
   ClanRanking:
     type: object
     properties:
-      clanLevel:
-        type: integer
       clanPoints:
+        type: integer
+      clanLevel:
         type: integer
       location:
         $ref: '#/definitions/Location'
@@ -822,6 +849,8 @@ definitions:
     properties:
       league:
         $ref: '#/definitions/League'
+      leagueTier:
+        $ref: '#/definitions/LeagueTier'
       builderBaseLeague:
         $ref: '#/definitions/BuilderBaseLeague'
       clan:
@@ -940,15 +969,15 @@ definitions:
     properties:
       legendTrophies:
         type: integer
-      previousBuilderBaseSeason:
-        $ref: '#/definitions/LegendLeagueTournamentSeasonResult'
-      bestBuilderBaseSeason:
-        $ref: '#/definitions/LegendLeagueTournamentSeasonResult'
-      bestSeason:
-        $ref: '#/definitions/LegendLeagueTournamentSeasonResult'
       currentSeason:
         $ref: '#/definitions/LegendLeagueTournamentSeasonResult'
       previousSeason:
+        $ref: '#/definitions/LegendLeagueTournamentSeasonResult'
+      bestSeason:
+        $ref: '#/definitions/LegendLeagueTournamentSeasonResult'
+      previousBuilderBaseSeason:
+        $ref: '#/definitions/LegendLeagueTournamentSeasonResult'
+      bestBuilderBaseSeason:
         $ref: '#/definitions/LegendLeagueTournamentSeasonResult'
   LegendLeagueTournamentSeasonResult:
     type: object
@@ -982,6 +1011,37 @@ definitions:
       detail:
         type: object
 paths:
+  /leaguetiers/{leagueTierId}:
+    get:
+      summary: Get league tier information
+      description: Get league tier information
+      operationId: getLeagueTier
+      tags:
+        - leagues
+      parameters:
+        -
+          name: leagueTierId
+          in: path
+          description: Identifier of the league tier.
+          required: true
+          type: string
+      responses:
+        '400':
+          $ref: '#/responses/BadRequestSpec'
+        '403':
+          $ref: '#/responses/ForbiddenSpec'
+        '404':
+          $ref: '#/responses/NotFoundSpec'
+        '429':
+          $ref: '#/responses/RequestThrottledSpec'
+        '500':
+          $ref: '#/responses/UnknownExceptionSpec'
+        '503':
+          $ref: '#/responses/InMaintenanceSpec'
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/LeagueTier'
   /clans/{clanTag}/currentwar/leaguegroup:
     get:
       summary: Retrieve information about clan's current clan war league group
@@ -1247,6 +1307,51 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/ClanWarLog'
+  /leaguetiers:
+    get:
+      summary: List league tiers
+      description: List league tiers
+      operationId: getLeagueTiers
+      tags:
+        - leagues
+      parameters:
+        -
+          name: limit
+          in: query
+          description: Limit the number of items returned in the response.
+          required: false
+          type: integer
+        -
+          name: after
+          in: query
+          description: |
+            Return only items that occur after this marker. Before marker can be found from the response, inside the 'paging' property. Note that only after or before can be specified for a request, not both.
+          required: false
+          type: string
+        -
+          name: before
+          in: query
+          description: |
+            Return only items that occur before this marker. Before marker can be found from the response, inside the 'paging' property. Note that only after or before can be specified for a request, not both.
+          required: false
+          type: string
+      responses:
+        '400':
+          $ref: '#/responses/BadRequestSpec'
+        '403':
+          $ref: '#/responses/ForbiddenSpec'
+        '404':
+          $ref: '#/responses/NotFoundSpec'
+        '429':
+          $ref: '#/responses/RequestThrottledSpec'
+        '500':
+          $ref: '#/responses/UnknownExceptionSpec'
+        '503':
+          $ref: '#/responses/InMaintenanceSpec'
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/LeagueTierList'
   /leagues:
     get:
       summary: List leagues

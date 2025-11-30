@@ -25,6 +25,39 @@ tags:
   description: Esports related APIs
 - name: developer
 paths:
+  /leaguetiers/{leagueTierId}:
+    get:
+      summary: Get league tier information
+      description: Get league tier information
+      operationId: getLeagueTier
+      tags:
+        - leagues
+      parameters:
+        - name: leagueTierId
+          in: path
+          description: Identifier of the league tier.
+          required: true
+          schema:
+            type: string
+      responses:
+        400:
+          $ref: '#/components/responses/BadRequestSpec'
+        403:
+          $ref: '#/components/responses/ForbiddenSpec'
+        404:
+          $ref: '#/components/responses/NotFoundSpec'
+        429:
+          $ref: '#/components/responses/RequestThrottledSpec'
+        500:
+          $ref: '#/components/responses/UnknownExceptionSpec'
+        503:
+          $ref: '#/components/responses/InMaintenanceSpec'
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeagueTier'
   /capitalleagues:
     get:
       summary: List capital leagues
@@ -721,6 +754,53 @@ paths:
           $ref: '#/components/responses/UnknownExceptionSpec'
         503:
           $ref: '#/components/responses/InMaintenanceSpec'
+  /leaguetiers:
+    get:
+      summary: List league tiers
+      description: List league tiers
+      operationId: getLeagueTiers
+      tags:
+        - leagues
+      parameters:
+        - name: limit
+          in: query
+          description: Limit the number of items returned in the response.
+          required: false
+          schema:
+            type: integer
+        - name: after
+          in: query
+          description: |
+            Return only items that occur after this marker. Before marker can be found from the response, inside the 'paging' property. Note that only after or before can be specified for a request, not both.
+          required: false
+          schema:
+            type: string
+        - name: before
+          in: query
+          description: |
+            Return only items that occur before this marker. Before marker can be found from the response, inside the 'paging' property. Note that only after or before can be specified for a request, not both.
+          required: false
+          schema:
+            type: string
+      responses:
+        400:
+          $ref: '#/components/responses/BadRequestSpec'
+        403:
+          $ref: '#/components/responses/ForbiddenSpec'
+        404:
+          $ref: '#/components/responses/NotFoundSpec'
+        429:
+          $ref: '#/components/responses/RequestThrottledSpec'
+        500:
+          $ref: '#/components/responses/UnknownExceptionSpec'
+        503:
+          $ref: '#/components/responses/InMaintenanceSpec'
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeagueTierList'
   /leagues:
     get:
       tags:
@@ -1496,6 +1576,11 @@ paths:
           $ref: '#/components/responses/InMaintenanceSpec'
 components:
   schemas:
+    BattleModifier:
+      type: string
+      enum:
+        - none
+        - hardMode
     BadgeUrls:
       required:
       - large
@@ -2253,6 +2338,10 @@ components:
           allOf:
           - $ref: '#/components/schemas/League'
           readOnly: true
+        leagueTier:
+          allOf:
+          - $ref: '#/components/schemas/LeagueTier'
+          readOnly: true
         builderBaseLeague:
           allOf:
           - $ref: '#/components/schemas/BuilderBaseLeague'
@@ -2306,6 +2395,7 @@ components:
       - previousClanRank
       - tag
       - trophies
+      # - leagueTier # seems to be required, leave it as not for now to avoid issues with cached objects
     PlayerHouse:
       type: object
       properties:
@@ -2351,6 +2441,24 @@ components:
       required:
       - name
       - id
+    LeagueTier:
+      type: object
+      properties:
+        name:
+          allOf:
+          - $ref: '#/components/schemas/JsonLocalizedName'
+          readOnly: true
+        id:
+          type: integer
+          readOnly: true
+        iconUrls:
+          allOf:
+          - $ref: '#/components/schemas/IconUrls'
+          readOnly: true
+      required:
+      - name
+      - id
+      - iconUrls
     League:
       type: object
       properties:
@@ -2408,6 +2516,10 @@ components:
           allOf:
           - $ref: '#/components/schemas/League'
           readOnly: true
+        leagueTier:
+          allOf:
+          - $ref: '#/components/schemas/LeagueTier'
+          readOnly: true
         attackWins:
           type: integer
           readOnly: true
@@ -2442,6 +2554,7 @@ components:
       - rank
       - tag
       - trophies
+      # - leagueTier # seems to be required, leave it as not for now to avoid issues with cached objects
     PlayerRankingClan:
       type: object
       properties:
@@ -2497,6 +2610,16 @@ components:
           readOnly: true
       required:
       - items
+    LeagueTierList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeagueTier'
+          readOnly: true
+      required:
+        - items
     ClanWarLog:
       type: object
       properties:
@@ -2524,6 +2647,11 @@ components:
           allOf:
           - $ref: '#/components/schemas/WarClanLogEntry'
           readOnly: true
+        battleModifier:
+          type: string
+          allOf:
+          - $ref: '#/components/schemas/BattleModifier'
+          readOnly: true
         endTime:
           type: string
           format: date-time
@@ -2537,6 +2665,7 @@ components:
       - endTime
       - opponent
       - teamSize
+      # - battleModifier # seems to be required, leave it as not for now to avoid issues with cached objects
     GoldPassSeason:
       type: object
       properties:
@@ -2904,6 +3033,10 @@ components:
           allOf:
           - $ref: '#/components/schemas/League'
           readOnly: true
+        leagueTier:
+          allOf:
+          - $ref: '#/components/schemas/LeagueTier'
+          readOnly: true
         builderBaseLeague:
           allOf:
           - $ref: '#/components/schemas/BuilderBaseLeague'
@@ -3011,6 +3144,7 @@ components:
       - troops
       - trophies
       - warStars
+      # - leagueTier # seems to be required, leave it as not for now to avoid issues with cached objects
     PlayerAchievementProgressList:
       type: array
       items:
@@ -3307,6 +3441,10 @@ components:
         attacksPerMember:
           type: integer
           readOnly: true
+        battleModifier:
+          allOf:
+          - $ref: '#/components/schemas/BattleModifier'
+          readOnly: true
         opponent:
           allOf:
           - $ref: '#/components/schemas/WarClan'
@@ -3335,6 +3473,7 @@ components:
       - preparationStartTime
       - startTime
       - teamSize
+      # - battleModifier # seems to be required, leave it as not for now to avoid issues with cached objects
     ClientError:
       type: object
       properties:
