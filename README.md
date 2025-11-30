@@ -1,14 +1,12 @@
 # Clash-of-Clans-Swagger
-Using a tool like OpenApi Generator you can use this to automatically produce methods to query the API.
-The swagger-source.yml file is whatever SuperCell gives us currently.
-The swagger.yml file is an improved version of that.
-The swagger-3.0.yaml is a rewrite in a newer OpenApi version. 
-This version gives us many more features that produces better output.
+Using a tool like [OpenApi Generator](https://github.com/OpenAPITools/openapi-generator) you can use this to automatically produce methods to query the API.
+File `swagger-source.yml` is whatever SuperCell gives us currently.
+File `swagger-3.0.yml` is a rewrite in a newer OpenAPI version. This allows us to fix bugs in what SuperCell provides and use some OpenAPI 3.0 features such as enums.
 
 C#
 ```
 -jar pathToOpenApiGenerator.jar generate `
-  -g csharp-netcore `
+  -g csharp `
   -i pathToSwagger.yml `
   -c pathToGeneratorConfig.json `
   -o pathToOutputDirectory `
