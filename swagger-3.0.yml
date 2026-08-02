@@ -3466,7 +3466,6 @@ components:
           format: date-time
           readOnly: true
       required:
-      - attacksPerMember
       - clan
       - endTime
       - opponent
