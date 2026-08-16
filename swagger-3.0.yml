@@ -2645,6 +2645,7 @@ components:
           allOf:
           - $ref: '#/components/schemas/BattleModifier'
           readOnly: true
+          nullable: true
         endTime:
           type: string
           format: date-time
@@ -2653,6 +2654,7 @@ components:
           allOf:
           - $ref: '#/components/schemas/Result'
           readOnly: true
+          nullable: true
       required:
       - clan
       - endTime
@@ -3438,6 +3440,7 @@ components:
           allOf:
           - $ref: '#/components/schemas/BattleModifier'
           readOnly: true
+          nullable: true
         opponent:
           allOf:
           - $ref: '#/components/schemas/WarClan'
