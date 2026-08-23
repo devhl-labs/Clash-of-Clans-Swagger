@@ -536,6 +536,9 @@ definitions:
         enum:
           - NONE
           - HARD_MODE
+          - MINUS_ONE
+          - MINUS_TWO
+          - MINUS_THREE
       startTime:
         type: string
       state:
@@ -722,6 +725,9 @@ definitions:
         enum:
           - NONE
           - HARD_MODE
+          - MINUS_ONE
+          - MINUS_TWO
+          - MINUS_THREE
       endTime:
         type: string
       result:

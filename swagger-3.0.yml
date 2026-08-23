@@ -1581,6 +1581,9 @@ components:
       enum:
         - none
         - hardMode
+        - minusOne
+        - minusTwo
+        - minusThree
     BadgeUrls:
       required:
       - large
