@@ -388,6 +388,37 @@ definitions:
         type: integer
       iconUrls:
         type: object
+  LeagueSeasonResultList:
+    type: array
+    items:
+      $ref: '#/definitions/LeagueSeasonResult'
+  LeagueSeasonResult:
+    type: object
+    properties:
+      leagueSeasonId:
+        $ref: '#/definitions/long'
+      leagueTrophies:
+        type: integer
+      leagueTierId:
+        type: integer
+      placement:
+        type: integer
+      attackWins:
+        type: integer
+      attackLosses:
+        type: integer
+      attackStars:
+        type: integer
+      defenseWins:
+        type: integer
+      defenseLosses:
+        type: integer
+      defenseStars:
+        type: integer
+      maxBattles:
+        type: integer
+  long:
+    type: object
   LeagueSeasonList:
     type: array
     items:
@@ -397,6 +428,89 @@ definitions:
     properties:
       id:
         type: string
+  LeagueGroup:
+    type: object
+    properties:
+      members:
+        $ref: '#/definitions/LeagueGroupMemberList'
+      parameters:
+        $ref: '#/definitions/LeagueGroupParameters'
+      attackLogs:
+        $ref: '#/definitions/LeagueGroupBattleLogEntryList'
+      defenseLogs:
+        $ref: '#/definitions/LeagueGroupBattleLogEntryList'
+  LeagueGroupBattleLogEntryList:
+    type: array
+    items:
+      $ref: '#/definitions/LeagueBattleLogEntry'
+  LeagueBattleLogEntry:
+    type: object
+    properties:
+      opponentPlayerTag:
+        type: string
+      opponentName:
+        type: string
+      stars:
+        type: integer
+      destructionPercentage:
+        type: integer
+      trophies:
+        type: integer
+      creationTime:
+        type: string
+  LeagueGroupParameters:
+    type: object
+    properties:
+      leagueId:
+        type: integer
+      maxBattles:
+        type: integer
+      activeModifier:
+        type: string
+        enum:
+          - NONE
+          - HARD_MODE
+          - MINUS_ONE
+          - MINUS_TWO
+          - MINUS_THREE
+      promoteCount:
+        type: integer
+      demoteCount:
+        type: integer
+      seasonId:
+        $ref: '#/definitions/long'
+  LeagueGroupMemberList:
+    type: array
+    items:
+      $ref: '#/definitions/LeagueGroupMember'
+  LeagueGroupMember:
+    type: object
+    properties:
+      playerTag:
+        type: string
+      playerName:
+        type: string
+      clanTag:
+        type: string
+      clanName:
+        type: string
+      leagueTrophies:
+        type: integer
+      attackWinCount:
+        type: integer
+      attackLoseCount:
+        type: integer
+      defenseWinCount:
+        type: integer
+      defenseLoseCount:
+        type: integer
+  PlayerVillage:
+    type: object
+    properties:
+      tag:
+        type: string
+      village:
+        $ref: '#/definitions/JsonNode'
   BuilderBaseLeagueList:
     type: array
     items:
@@ -442,6 +556,8 @@ definitions:
         type: boolean
       warLosses:
         type: integer
+      requiredLeagueTier:
+        $ref: '#/definitions/LeagueTier'
       isWarLogPublic:
         type: boolean
       clanCapitalPoints:
@@ -491,6 +607,10 @@ definitions:
         type: integer
       districts:
         $ref: '#/definitions/ClanDistrictDataList'
+      clanGoldSinkTotal:
+        $ref: '#/definitions/Long'
+  Long:
+    type: object
   ClanDistrictDataList:
     type: array
     items:
@@ -621,6 +741,54 @@ definitions:
         type: integer
   Float:
     type: object
+  BattleLogEntryList:
+    type: array
+    items:
+      $ref: '#/definitions/BattleLogEntry'
+  BattleLogEntry:
+    type: object
+    properties:
+      battleType:
+        type: string
+        enum:
+          - HOME_VILLAGE
+          - RANKED
+          - LEGEND
+      attack:
+        type: boolean
+      armyShareCode:
+        type: string
+      opponentPlayerTag:
+        type: string
+      opponentName:
+        type: string
+      opponentTownHallLevel:
+        type: integer
+      stars:
+        type: integer
+      destructionPercentage:
+        type: integer
+      lootedResources:
+        $ref: '#/definitions/BattleLogResourceList'
+      extraLootedResources:
+        $ref: '#/definitions/BattleLogResourceList'
+      availableLoot:
+        $ref: '#/definitions/BattleLogResourceList'
+      battleTime:
+        type: integer
+      battleTimestamp:
+        type: string
+  BattleLogResourceList:
+    type: array
+    items:
+      $ref: '#/definitions/Resource'
+  Resource:
+    type: object
+    properties:
+      name:
+        type: string
+      amount:
+        $ref: '#/definitions/long'
   ClanBuilderBaseRankingList:
     type: array
     items:
@@ -922,6 +1090,14 @@ definitions:
         type: integer
       playerHouse:
         $ref: '#/definitions/PlayerHouse'
+      currentLeagueGroupTag:
+        type: string
+      currentLeagueSeasonId:
+        $ref: '#/definitions/Long'
+      previousLeagueGroupTag:
+        type: string
+      previousLeagueSeasonId:
+        $ref: '#/definitions/Long'
   PlayerAchievementProgressList:
     type: array
     items:
@@ -1772,6 +1948,37 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/ClanBuilderBaseRankingList'
+  /players/{playerTag}/battlelog:
+    get:
+      summary: Get player battle log
+      description: Get player battle log for recent battles.
+      operationId: getBattleLog
+      tags:
+        - players
+      parameters:
+        -
+          name: playerTag
+          in: path
+          description: Tag of the player.
+          required: true
+          type: string
+      responses:
+        '400':
+          $ref: '#/responses/BadRequestSpec'
+        '403':
+          $ref: '#/responses/ForbiddenSpec'
+        '404':
+          $ref: '#/responses/NotFoundSpec'
+        '429':
+          $ref: '#/responses/RequestThrottledSpec'
+        '500':
+          $ref: '#/responses/UnknownExceptionSpec'
+        '503':
+          $ref: '#/responses/InMaintenanceSpec'
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/BattleLogEntryList'
   /clans/{clanTag}/currentwar:
     get:
       summary: Retrieve information about clan's current clan war
@@ -1950,6 +2157,49 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/League'
+  /leaguegroup/{leagueGroupTag}/{leagueSeasonId}:
+    get:
+      summary: Get ranked battle league group information for season and player
+      description: Get ranked battle league group information for season and player
+      operationId: getLeagueGroup
+      tags:
+        - leagues
+      parameters:
+        -
+          name: leagueGroupTag
+          in: path
+          description: Identifier of the league group.
+          required: true
+          type: string
+        -
+          name: leagueSeasonId
+          in: path
+          description: Identifier of the league season.
+          required: true
+          type: string
+        -
+          name: playerTag
+          in: query
+          description: Tag of the player
+          required: true
+          type: string
+      responses:
+        '400':
+          $ref: '#/responses/BadRequestSpec'
+        '403':
+          $ref: '#/responses/ForbiddenSpec'
+        '404':
+          $ref: '#/responses/NotFoundSpec'
+        '429':
+          $ref: '#/responses/RequestThrottledSpec'
+        '500':
+          $ref: '#/responses/UnknownExceptionSpec'
+        '503':
+          $ref: '#/responses/InMaintenanceSpec'
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/LeagueGroup'
   /leagues/{leagueId}/seasons:
     get:
       summary: Get league seasons
@@ -2002,6 +2252,37 @@ paths:
           description: Successful response
           schema:
             $ref: '#/definitions/LeagueSeasonList'
+  /players/{playerTag}/leaguehistory:
+    get:
+      summary: Get player league history
+      description: Get player league history for ranked battles.
+      operationId: getLeagueHistory
+      tags:
+        - players
+      parameters:
+        -
+          name: playerTag
+          in: path
+          description: Tag of the player.
+          required: true
+          type: string
+      responses:
+        '400':
+          $ref: '#/responses/BadRequestSpec'
+        '403':
+          $ref: '#/responses/ForbiddenSpec'
+        '404':
+          $ref: '#/responses/NotFoundSpec'
+        '429':
+          $ref: '#/responses/RequestThrottledSpec'
+        '500':
+          $ref: '#/responses/UnknownExceptionSpec'
+        '503':
+          $ref: '#/responses/InMaintenanceSpec'
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/LeagueSeasonResultList'
   /clans/{clanTag}/members:
     get:
       summary: List clan members

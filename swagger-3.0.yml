@@ -1433,6 +1433,117 @@ paths:
           $ref: '#/components/responses/UnknownExceptionSpec'
         503:
           $ref: '#/components/responses/InMaintenanceSpec'
+  /players/{playerTag}/battlelog:
+    get:
+      tags:
+      - players
+      summary: Get player battle log
+      description: Get player battle log for recent battles.
+      operationId: getBattleLog
+      parameters:
+      - name: playerTag
+        in: path
+        description: Tag of the player.
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BattleLogEntryList'
+        400:
+          $ref: '#/components/responses/BadRequestSpec'
+        403:
+          $ref: '#/components/responses/ForbiddenSpec'
+        404:
+          $ref: '#/components/responses/NotFoundSpec'
+        429:
+          $ref: '#/components/responses/RequestThrottledSpec'
+        500:
+          $ref: '#/components/responses/UnknownExceptionSpec'
+        503:
+          $ref: '#/components/responses/InMaintenanceSpec'
+  /players/{playerTag}/leaguehistory:
+    get:
+      tags:
+      - players
+      summary: Get player league history
+      description: Get player league history for ranked battles.
+      operationId: getLeagueHistory
+      parameters:
+      - name: playerTag
+        in: path
+        description: Tag of the player.
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeagueSeasonResultList'
+        400:
+          $ref: '#/components/responses/BadRequestSpec'
+        403:
+          $ref: '#/components/responses/ForbiddenSpec'
+        404:
+          $ref: '#/components/responses/NotFoundSpec'
+        429:
+          $ref: '#/components/responses/RequestThrottledSpec'
+        500:
+          $ref: '#/components/responses/UnknownExceptionSpec'
+        503:
+          $ref: '#/components/responses/InMaintenanceSpec'
+  /leaguegroup/{leagueGroupTag}/{leagueSeasonId}:
+    get:
+      tags:
+      - leagues
+      summary: Get ranked battle league group information for season and player
+      description: Get ranked battle league group information for season and player
+      operationId: getLeagueGroup
+      parameters:
+      - name: leagueGroupTag
+        in: path
+        description: Identifier of the league group.
+        required: true
+        schema:
+          type: string
+      - name: leagueSeasonId
+        in: path
+        description: Identifier of the league season.
+        required: true
+        schema:
+          type: string
+      - name: playerTag
+        in: query
+        description: Tag of the player
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeagueGroup'
+        400:
+          $ref: '#/components/responses/BadRequestSpec'
+        403:
+          $ref: '#/components/responses/ForbiddenSpec'
+        404:
+          $ref: '#/components/responses/NotFoundSpec'
+        429:
+          $ref: '#/components/responses/RequestThrottledSpec'
+        500:
+          $ref: '#/components/responses/UnknownExceptionSpec'
+        503:
+          $ref: '#/components/responses/InMaintenanceSpec'
   /api/login:
     servers:
       - url: https://developer.clashofclans.com/api/login
@@ -1584,6 +1695,12 @@ components:
         - minusOne
         - minusTwo
         - minusThree
+    BattleType:
+      type: string
+      enum:
+        - homeVillage
+        - ranked
+        - legend
     BadgeUrls:
       required:
       - large
@@ -1866,6 +1983,10 @@ components:
           allOf:
           - $ref: '#/components/schemas/CapitalLeague'
           readOnly: true
+        requiredLeagueTier:
+          allOf:
+          - $ref: '#/components/schemas/LeagueTier'
+          readOnly: true
         isFamilyFriendly:
           type: boolean
           readOnly: true
@@ -1921,6 +2042,10 @@ components:
         districts:
           allOf:
           - $ref: '#/components/schemas/ClanDistrictDataList'
+          readOnly: true
+        clanGoldSinkTotal:
+          type: integer
+          format: int64
           readOnly: true
     ClanCapitalRaidSeasons:
       type: object
@@ -3124,6 +3249,20 @@ components:
           allOf:
           - $ref: '#/components/schemas/PlayerHouse'
           readOnly: true
+        currentLeagueGroupTag:
+          type: string
+          readOnly: true
+        currentLeagueSeasonId:
+          type: integer
+          format: int64
+          readOnly: true
+        previousLeagueGroupTag:
+          type: string
+          readOnly: true
+        previousLeagueSeasonId:
+          type: integer
+          format: int64
+          readOnly: true
       required:
       - achievements
       - attackWins
@@ -3490,6 +3629,228 @@ components:
           readOnly: true
       required:
       - reason
+    BattleLogEntryList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BattleLogEntry'
+          readOnly: true
+      required:
+      - items
+    BattleLogEntry:
+      type: object
+      properties:
+        battleType:
+          allOf:
+          - $ref: '#/components/schemas/BattleType'
+          readOnly: true
+        attack:
+          type: boolean
+          readOnly: true
+        armyShareCode:
+          type: string
+          readOnly: true
+        opponentPlayerTag:
+          type: string
+          readOnly: true
+        opponentName:
+          type: string
+          readOnly: true
+        opponentTownHallLevel:
+          type: integer
+          readOnly: true
+        stars:
+          type: integer
+          readOnly: true
+        destructionPercentage:
+          type: integer
+          readOnly: true
+        lootedResources:
+          allOf:
+          - $ref: '#/components/schemas/BattleLogResourceList'
+          readOnly: true
+        extraLootedResources:
+          allOf:
+          - $ref: '#/components/schemas/BattleLogResourceList'
+          readOnly: true
+        availableLoot:
+          allOf:
+          - $ref: '#/components/schemas/BattleLogResourceList'
+          readOnly: true
+        battleTime:
+          type: integer
+          readOnly: true
+        battleTimestamp:
+          type: string
+          format: date-time
+          readOnly: true
+    BattleLogResourceList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Resource'
+    Resource:
+      type: object
+      properties:
+        name:
+          type: string
+          readOnly: true
+        amount:
+          type: integer
+          format: int64
+          readOnly: true
+    LeagueSeasonResultList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeagueSeasonResult'
+          readOnly: true
+      required:
+      - items
+    LeagueSeasonResult:
+      type: object
+      properties:
+        leagueSeasonId:
+          type: integer
+          format: int64
+          readOnly: true
+        leagueTrophies:
+          type: integer
+          readOnly: true
+        leagueTierId:
+          type: integer
+          readOnly: true
+        placement:
+          type: integer
+          readOnly: true
+        attackWins:
+          type: integer
+          readOnly: true
+        attackLosses:
+          type: integer
+          readOnly: true
+        attackStars:
+          type: integer
+          readOnly: true
+        defenseWins:
+          type: integer
+          readOnly: true
+        defenseLosses:
+          type: integer
+          readOnly: true
+        defenseStars:
+          type: integer
+          readOnly: true
+        maxBattles:
+          type: integer
+          readOnly: true
+    LeagueGroup:
+      type: object
+      properties:
+        members:
+          allOf:
+          - $ref: '#/components/schemas/LeagueGroupMemberList'
+          readOnly: true
+        parameters:
+          allOf:
+          - $ref: '#/components/schemas/LeagueGroupParameters'
+          readOnly: true
+        attackLogs:
+          allOf:
+          - $ref: '#/components/schemas/LeagueGroupBattleLogEntryList'
+          readOnly: true
+        defenseLogs:
+          allOf:
+          - $ref: '#/components/schemas/LeagueGroupBattleLogEntryList'
+          readOnly: true
+    LeagueGroupBattleLogEntryList:
+      type: array
+      items:
+        $ref: '#/components/schemas/LeagueBattleLogEntry'
+    LeagueBattleLogEntry:
+      type: object
+      properties:
+        opponentPlayerTag:
+          type: string
+          readOnly: true
+        opponentName:
+          type: string
+          readOnly: true
+        stars:
+          type: integer
+          readOnly: true
+        destructionPercentage:
+          type: integer
+          readOnly: true
+        trophies:
+          type: integer
+          readOnly: true
+        creationTime:
+          type: string
+          format: date-time
+          readOnly: true
+    LeagueGroupParameters:
+      type: object
+      properties:
+        leagueId:
+          type: integer
+          readOnly: true
+        maxBattles:
+          type: integer
+          readOnly: true
+        activeModifier:
+          allOf:
+          - $ref: '#/components/schemas/BattleModifier'
+          readOnly: true
+        promoteCount:
+          type: integer
+          readOnly: true
+        demoteCount:
+          type: integer
+          readOnly: true
+        seasonId:
+          type: integer
+          format: int64
+          readOnly: true
+    LeagueGroupMemberList:
+      type: array
+      items:
+        $ref: '#/components/schemas/LeagueGroupMember'
+    LeagueGroupMember:
+      type: object
+      properties:
+        playerTag:
+          type: string
+          readOnly: true
+        playerName:
+          type: string
+          readOnly: true
+        clanTag:
+          type: string
+          readOnly: true
+          nullable: true
+        clanName:
+          type: string
+          readOnly: true
+          nullable: true
+        leagueTrophies:
+          type: integer
+          readOnly: true
+        attackWinCount:
+          type: integer
+          readOnly: true
+        attackLoseCount:
+          type: integer
+          readOnly: true
+        defenseWinCount:
+          type: integer
+          readOnly: true
+        defenseLoseCount:
+          type: integer
+          readOnly: true
   responses:
     BadRequestSpec:
       description: Client provided incorrect parameters for the request.
